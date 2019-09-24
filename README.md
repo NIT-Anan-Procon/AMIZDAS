@@ -1,5 +1,4 @@
-# AMIZDAS
-for source list
+AMIZDAS source list
 
 1.Webページ
 
