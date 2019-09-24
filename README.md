@@ -1,1 +1,0 @@
-## AMIZDAS Source Code List
