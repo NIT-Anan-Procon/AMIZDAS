@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+     <script src="js/jquery.min.js"></script>
+    <link rel="stylesheet" href="css/config.css">
+    <script type="text/javascript" src="js/addtext.js"></script>
+    <script type="text/javascript" src="js/modal.js"></script>
+    <link rel="stylesheet" href="css/addtext.css">
+    <link rel="stylesheet" href="css/modal.css">
+
+    <!--メニューボタンに関するcss,js-->
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/drawer.min.css">
+
+    <script src="js/iscroll.js"></script>
+    <script src="js/drawer.min.js"></script>
+    <script type="text/javascript" src="js/menu.js"></script>
+
+    <title>AMIZDAS admin</title>
+  </head>
+
+  <!--メニューボタンに関する記述-->
+  <body class="drawer drawer--right">
+    <button type="button" class="drawer-toggle drawer-hamburger">
+      <span class="sr-only">toggle navigation</span>
+      <span class="drawer-hamburger-icon"></span>
+    </button>
+    <nav class="drawer-nav">
+      <ul class="drawer-menu">
+        <p>メニュー</p>
+          <li><a href="index.html">topページへ</a></li>
+          <li><a href="login_mypage.php">マイページへ</a></li>
+          <li><a href="login_admin.php">管理者ページへ</a></li>
+      </ul>
+    </nav>
+
+    <!--ここまで-->
+    <div class="minititle">
+      設置者用設定
+    </div>
+
+    <div class="conf">
+      <p>水位計：水位計1号機</p>
+      <b>超音波センサから最低水面までの距離(基準水位)：</b><input type="text" name="name">cm
+      <br>
+	    <b> 危険：</b><input type="text" name="name">cm以上
+      <br>
+	    <b> 注意：</b><input type="text" name="name">cm以上
+      <br>
+      オプション<br><input type="checkbox" name="rain">雨量計
+      <br>
+      <tr>
+ 		    <td><b> アラート送信先：</b></td>
+	    </tr>
+      <br>
+      <div id="input_pluralBox">
+      	<div id="input_plural">
+      	  <input type="text" class="form-control" placeholder="メールアドレスを入力してください。">
+      	  <input type="button" value="－" class="del pluralBtn">
+      	</div>
+        <div id="input_plural">
+          <input type="text" class="form-control" placeholder="メールアドレスを入力してください。">
+          <input type="button" value="－" class="del pluralBtn">
+        </div>
+        <div id="input_plural">
+          <input type="text" class="form-control" placeholder="メールアドレスを入力してください。">
+          <input type="button" value="－" class="del pluralBtn">
+        </div>
+        <div class="center">
+          <input type="button" value="追加" class="add pluralBtn">
+        </div>
+        <br>
+        <br>
+        LINE通知
+        <input type="radio" value="use" class="">使う
+        <input type="radio" value="unuse" class="">使わない
+        <br>
+        <input type="text" placeholder="">cm以上
+        <br>
+        <input type="text" class="form-control" value="危険水位に到達しました。周辺の安全に十分注意して、速やかに避難を開始して下さい。" >
+        <br>
+        <input type="text" placeholder="">cm以上
+        <br>
+        <input type="text" class="form-control" value="注意水位に到達しました。周辺の住民は今後の情報や周囲の状況に注意して下さい。">
+        <br>
+        メッセージを送信する
+        <br>
+        <input type="text" class="form-control massage" value="" placeholder="連絡事項を書き込んでください">
+        <button type="submit">送信</button>
+  	  </div>
+      <div class="button">
+	      <input type="submit" class="set_button" onclick="location.href='complete_con.html'" value="設定を更新">
+    		<input type="reset" onclick="location.href='admin_con.html'" value="リセット">
+      </div>
+    </div>
+    </div>
+	<body>
+</html>

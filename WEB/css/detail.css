@@ -1,0 +1,51 @@
+.minititle{
+  text-align: center;
+  font-size: 40px;
+}
+.waterleveldata{
+  position: fixed;
+  margin: 0px 0px 0px 750px;
+  font-size: 20px; 
+}
+.time{
+  font-size: 30px;
+}
+.picture{
+  margin: 45px 0px 0px 45px;
+  width: 600px;
+}
+.info{
+  margin: 5px 0px 0px 45px;
+  font-size: 20px;
+}
+.alert_conf{
+  padding: 0px;
+  font-size: 1.4em;
+  width: 650px;
+  height: 60px;
+}
+
+.admin_button{
+  position: fixed;
+  font-size: 1.0em;
+  left: 75%;
+  width: 17%;
+  padding: 10px 20px;
+  margin: 5px 20px 5px 5px;
+
+  text-align: center;
+}
+
+p.line_blue{
+  max-width: 300px;
+  border-bottom :solid 1px blue;
+}
+
+p.line_yellow{
+  max-width: 300px;
+  border-bottom :solid 1px #FFD700;
+}
+
+.waterlevel_con{
+  font-size: 16px;
+}

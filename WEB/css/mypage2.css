@@ -1,0 +1,26 @@
+html, body {
+  height: 100%;
+}
+
+.minititle{
+  text-align: center;
+  font-size: 40px;
+}
+
+.conf {
+  height: 100%;
+  width: 90%;
+}
+#mapcontainer{
+  /* position: static; */
+  /* display: inline-block; */
+  z-index: 0;
+  width: 100%;
+  height: 80%;
+  margin: auto;
+}
+
+iframe {
+  margin-top: 10%;
+  margin-bottom: 3%;
+}

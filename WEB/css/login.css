@@ -1,0 +1,17 @@
+.minititle{
+  text-align: center;
+  font-size: 40px;
+}
+
+.conf{
+  display: block;
+  position: center;
+}
+
+input{
+  margin: 5px;
+}
+
+input[type="text"]{
+  width: 30em;
+}

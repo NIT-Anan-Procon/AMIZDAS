@@ -1,0 +1,31 @@
+body {
+  width: auto;
+}
+
+.minititle{
+  text-align: center;
+  font-size: 40px;
+}
+
+.conf{
+  position: absolute;
+  display: block;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  /* margin-top: 3%;
+  margin-left: 15%;
+  margin-right: 15%; */
+}
+
+input{
+  margin: 5px;
+  /* margin-left: 8px; */
+}
+
+input[type="text"]{
+  /* width: 15em; */
+}
+.button {
+  text-align: center;
+}

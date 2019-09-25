@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/default.css">
+    <link rel="stylesheet" href="css/index.css">
+
+<!--メニューボタンに関するcss,js-->
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/drawer.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/iscroll.js"></script>
+    <script src="js/drawer.min.js"></script>
+    <script type="text/javascript" src="js/menu.js"></script>
+
+    <title>AMIZDAS</title>
+  </head>
+<!--メニューボタンに関する記述-->
+  <body class="drawer drawer--right">
+    <button type="button" class="drawer-toggle drawer-hamburger">
+      <span class="sr-only">toggle navigation</span>
+      <span class="drawer-hamburger-icon"></span>
+    </button>
+    <nav class="drawer-nav">
+      <ul class="drawer-menu">
+        <p>メニュー</p>
+        <li><a href="index.html">topページへ</a></li>
+        <li><a href="login_mypage.php">マイページへ</a></li>
+        <li><a href="login_admin.php">管理者ページへ</a></li>
+      </ul>
+    </nav>
+<!--メニューボタンここまで-->
+    <div class="test">
+      <h1>AMIZDASへようこそ！！</h1>
+    </div>
+    <div class="japan_map">
+      <img src="img/japan.jpg">
+    </div>
+    <div class="main">
+      <p class="title">AMIZDAS(あ!水ダス)</p>
+      <p class="subtitle">～水災害を自ら守る水位計～</p>
+      <p class="description">
+        ここでは、地域に設置された専用の水位計から水位、危険度、
+        <br>
+        今後の水位予測などを確認することができます。
+        <br>
+        <br>
+        また、自らが水位計の管理者となって危険な場所の監視、
+        <br>
+        アラートの設定なども可能です。
+      </p>
+      <button class="amizdas_detail" onclick="location.href='map.html'">水位計が設置されたマップを確認する</button>
+    </div>
+  </body>
+</html>
