@@ -1,5 +1,5 @@
-/*watergaugeV3_HCG_Fx.ino   SakuraA3基板 4.5m 温度補正有り GPS Sigfox */
-#define VernNo "Ver1.21_noSD"
+/*watergaugeV3_HCG_Fx.ino   SakuraA3基板 4.5m 温度補正無し GPS Sigfox SD無し*/
+#define VernNo "Ver1.21_noTemp_noSD"
 /* スリープ中の雨量計検知時には一旦スリープを解除し各センサ出力を測定しサーバへ送信し再びスリープ*/
 //制御フラグ
 boolean Initialization=1;  //1:Initialization
@@ -54,7 +54,7 @@ byte NoRadiationCount=0;          //日射量が0が続くカウント
 int Distance_send=max_range;      //前回送信データ_水位距離（センサ端面）mm
 byte invalid_Clong=0;   //最大距離オーバー無効距離測定回数
 #define measurec 7     //測定回数
-float temperature = 0;               //気温を初期化
+//float temperature = 0;               //気温を初期化
 #define temp_gain 0.1653     // ℃・LSB =3.3/1024*1000/19.5
 #define temp_offset  124   // 0℃ 0.4V  0.4/3.3*1024=124
 boolean send_Flg=0;         //送信フラグ送信時1
@@ -89,6 +89,7 @@ void setup() {  //  Will be called only once.
 
   digitalWrite(Sigfox,HIGH);//Sigfoxの電源OFF
   pinMode(Sigfox,INPUT);//Sigfoxの電源OFF
+  Serial.println("---Start Loop---");
   WDT_setup8();                          // 8秒のWDT設定
   Serial.end();    // Txの漏れ電流対策
   // 日射量を検知したらスタート
@@ -119,8 +120,8 @@ void loop()
   }
   pinMode(Temp_Power, OUTPUT);     //温度センサの電源ON
   digitalWrite(Temp_Power, LOW);   //温度センサの電源ON   距離測定中も温度を測定するため、距離測定前に電源ON
-  temperature = temp_gain*(ReadSens_ch(0,3,50)-temp_offset);  //温度測定電圧AD0の3回平均値(個別ch, 読取回数, intarvalms) 
-  if(temperature<-40 || temperature >60) temperature=25.0; //温度の値が不正な場合25.0℃に設定
+//  temperature = temp_gain*(ReadSens_ch(0,3,50)-temp_offset);  //温度測定電圧AD0の3回平均値(個別ch, 読取回数, intarvalms) 
+//  if(temperature<-40 || temperature >60) temperature=25.0; //温度の値が不正な場合25.0℃に設定
 
   int DistA[measurec];           //4秒間隔で7回測定値保存用
   byte m=0;
@@ -162,7 +163,8 @@ void loop()
     String msg = ToHex(Distance) //  int to 2 byte: Distance
      + ToHex(Radiation)    //  int to 2 byte: Radiation
      + ToHex((int)(Eneloop*100.0))    //  int to 2 byte: Eneloop * 100
-     + ToHex((int)((temperature+50)*100))   //  int to 2 byte: temperature
+//     + ToHex((int)((temperature+50)*100))   //  int to 2 byte: temperature
+     + ToHex((int)(0))   //  int to 2 byte: temperature
      + ToHex(Rainfall);      //  int to 2 byte: Rainfallの10倍値送信
     //  Send the message.
     response=Sigfox_Send_msg(msg);
@@ -212,6 +214,7 @@ void loop()
   if (RtcCount%6 == 0){       //6×10分(1時間)経過したらRainfall計算＆初期化（Sigfox+GPSの時％6）
     Rainfall = (int)(10*(0.2794 * numClicksRain)+0.5);//60分に計測された雨量計のカウント数より1時間当たりの降水量を算出_60分保持,10倍してint保持
     numClicksRain = 0;
+//    RtcCount = 1;      
   }
   //Initialization
   Initialization = 0;			//Initializationフラグを0にする
@@ -273,10 +276,10 @@ int WaterGauge_ave(int n, int intarvalms,int UsTimeOut,int Nmax){
         }
         WaterGauge(US_timeout_max,25.0);// 1回ダミー測定
         for (int i = 0; i <Nmax ; i++){ //最大Nmax回測定
-            temperature = 0.5*temperature + 0.5*temp_gain*(ReadSens_ch(0,3,50)-temp_offset); //温度測定電圧AD0の3回平均値(個別ch, 読取回数, intarvalms) delay(150)も兼ねる
-            if (intarvalms>150) delay(intarvalms-150);
-            if(temperature<-40 || temperature >60) temperature=25.0; //温度の値が不正な場合25.0℃に設定
-            Wg = WaterGauge(UsTimeOut,temperature);    //温度補正あり
+//            temperature = 0.5*temperature + 0.5*temp_gain*(ReadSens_ch(0,3,50)-temp_offset); //温度測定電圧AD0の3回平均値(個別ch, 読取回数, intarvalms) delay(150)も兼ねる
+//            if (intarvalms>150) delay(intarvalms-150);
+            delay(intarvalms);
+            Wg = WaterGauge(UsTimeOut,25);    //温度補正無し
             if(Wg >= max_range) {
               invalid_Clong++;
               delay(intarvalms);          //timeout時 delayを1回分余分に待ってから次ぎの計測へ

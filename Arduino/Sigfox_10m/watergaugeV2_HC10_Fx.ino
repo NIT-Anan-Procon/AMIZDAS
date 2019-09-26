@@ -1,5 +1,5 @@
 /*watergaugeV2_HC10_Fx.ino   SakuraA3基板 10m 温度補正有り GPS Sigfox */
-#define VernNo "Ver1.1"
+#define VernNo "Ver1.1_noSD"
 /* スリープ中の雨量計検知時には一旦スリープを解除し各センサ出力を測定しサーバへ送信し再びスリープ*/
 //制御フラグ
 boolean Initialization=1;  //1:Initialization
@@ -9,7 +9,7 @@ boolean Initialization=1;  //1:Initialization
 volatile byte wdt_cycle = 0;           // WDTタイムアウトカウント
 #define timeout_count10 72           //10分(72) WDTソフトリセット時間設定 RTC無し前提
 //#define timeout_count5 16             //test用 8秒 WDTソフト割り込み時間設定
-
+int timeout_adjust = 0;               //内部クロック調整用
 //SleepMode
 #include <avr/sleep.h>
 #ifndef cbi
@@ -87,7 +87,6 @@ void setup() {  //  Will be called only once.
 
   digitalWrite(Sigfox,HIGH);//Sigfoxの電源OFF
   pinMode(Sigfox,INPUT);//Sigfoxの電源OFF
-  Serial.println("---Start Loop---");
   WDT_setup8();                          // 8秒のWDT設定
   Serial.end();    // Txの漏れ電流対策
   // 日射量を検知したらスタート
@@ -156,41 +155,37 @@ void loop()
      + ToHex((int)(Eneloop*100.0))    //  int to 2 byte: Eneloop * 100
      + ToHex((int)((temperature+50)*100))   //  int to 2 byte: temperature
      + ToHex(Rainfall);      //  int to 2 byte: Rainfallの10倍値送信
-  
-    if (Distance < max_range ) Distance_send=Distance; //Distance_sendを更新
- 
     //  Send the message.
     response=Sigfox_Send_msg(msg);
+    if (Distance < max_range ) Distance_send=Distance; //Distance_sendを更新
 
     Serial.begin(9600);//電流漏れ対策でTxをINPUTにしていたのを戻す。
     //GPSを1日2回測定、日の出と日の入りのタイミング。
-    if( (Radiation > 0 && night==1) || GPSflag==false || (Radiation == 0 && night==0) ){
+    if( (Radiation > 0 && night==1) || GPSflag==false || (Radiation == 0 && night==0) || Eneloop>4.4){
       GPSflag = GPS_get();//GPS取得,夜から日射量が出始めたら測定、前回失敗なら測定
       Serial.end();    // Txの漏れ電流対策
+      if(GPSflag==true){    //  GPS取得成功なら送信  
+        //  Set SIGFOX msg
+        unsigned long ul3= (long)((RtcCount))             //デバッグ用
+                         +( (long)(wdt_cycle)<<8)         //デバッグ用
+                         +( (long)(timeout_adjust) <<16); //デバッグ用
+        //  Send message  GPS_data as a SIGFOX message.
+        msg = bit32Hex(latn)     //  long to 32bits:北緯  dd.ddddd*100
+             + bit32Hex(lnge)     //  long to 32bits: 東経 dd.ddddd*100   100の桁を省略して送信
+             + bit32Hex(ul3);    //  long to 32bits: デバッグ用
+        //  Send the message.
+        response=Sigfox_Send_msg(msg);
+      }
     }
+    if(Initialization == 1) GPSflag=false; //起動からGPS測定を2回実施するため1回目をfalseに設定
     if(Radiation > 0) night=0;   //日射量があればnightフラグは0、無ければ1（true）
     else night=1;
-
-    if(GPSflag==true){    //  GPS取得成功なら送信  
-    //  Set SIGFOX msg
-      unsigned long ul3= (long)((temperature+50)*10)
-                       +( (long)((Eneloop-3)*50)<<11)
-                       +( (long)(Radiation) <<19);
-      //  Send message  GPS_data as a SIGFOX message.
-      msg = bit32Hex(latn)     //  long to 32bits:北緯  dd.ddddd*100
-           + bit32Hex(lnge)     //  long to 32bits: 東経 dd.ddddd*100   100の桁を省略して送信
-           + bit32Hex(ul3);    //  long to 32bits: temperature,Eneloop,Radiation
-  
-      //  Send the message.
-      response=Sigfox_Send_msg(msg);
-    }
   }
 
 
-//Eneloop電池電圧が4.8V以上で日射量があるとき、電流測定回路をONにして過充電を防止する。
+//Eneloop電池電圧が4.6V以上で日射量があるとき、電流測定回路をONにして過充電を防止する。
   Eneloop=Eneloop_const*ReadSens_ch(1,8,50);      //Eneloop電圧AD1の4回平均値(個別ch, 読取回数, intarvalms)(delay400も兼ねている)
-  if (Eneloop>4.8 ){
-
+  if (Eneloop>4.6){
     digitalWrite(TRON_GPS,HIGH);//TR ON  電流測定回路ON(GPS電源と兼用) 
   }
   digitalWrite(Sigfox,HIGH);//Sigfoxの電源OFF
@@ -200,15 +195,14 @@ void loop()
 //sleepからの復帰が雨量計の場合およびWDTの場合は再度スリープに戻る。
   do{
     RainAction = 0; //スリープ後のスリープ復帰判断用にkを初期化  //anan Sleep復帰から計測～送信完了までの間にRainAction = 1になった場合の対応
-    //Sleep mode Setup
-    system_sleep();
-  }while(RainAction !=0 || wdt_cycle < timeout_count10);  // timeout_count10(x8.192秒)以上経過したら抜ける
+    system_sleep();  //Sleep mode Setup
+  }while(RainAction !=0 || wdt_cycle < timeout_count10 + timeout_adjust);  // timeout_count10(x8.192秒)以上経過したら抜ける
+
   wdt_cycle=0; //WDTのカウントのリセット
   RtcCount++; //RTCからの割り込み回数のカウント
-  if (RtcCount > 6){       //6×10分(1時間)経過したら初期化
+  if (RtcCount%6 == 0){       //6×10分(1時間)経過したらRainfall計算＆初期化（Sigfox+GPSの時％6）
     Rainfall = (int)(10*(0.2794 * numClicksRain)+0.5);//60分に計測された雨量計のカウント数より1時間当たりの降水量を算出_60分保持,10倍してint保持
     numClicksRain = 0;
-    RtcCount = 1;      
   }
   //Initialization
   Initialization = 0;			//Initializationフラグを0にする
@@ -423,11 +417,19 @@ boolean GPS_get(){
     lnge = (long)((float)lnge/validcount*1000000)+(long)(lngefa/validcount*1000000+0.5);//東経の100の桁を除外して足し算
   }
   //GPSによるRtcCount合わせ処理
-  RtcCount=(byte)((int)((timeg%10000)/100))/10;   //10分刻みのRtcCountを設定
-  wdt_cycle=(int)((((int)( (timeg%10000)/100)%10)*60+timeg%100) /8.192+0.5);//次の10分までのためのWDTを設定
-  if(wdt_cycle > timeout_count10-7){
-    wdt_cycle=0;      //残り56秒以内ならクリアして10分後に測定
-    RtcCount=(RtcCount++)%6;   //RtcCountもインクリメント
+  byte wdt_old=wdt_cycle;
+  byte RtcCount_old=RtcCount;
+  RtcCount=(byte)((timeg%10000)/1000);   //timeg%10000でMMSSを抽出,/1000で10分刻みのRtcCountを設定
+  wdt_cycle=(int)(((( (int)(timeg%10000)/100)%10)*60+timeg%100) /8.192);//次の10分までのためのWDTを設定
+  if(Initialization == 0 && RtcCount_old%6==0) {
+    int adjust = (((RtcCount_old-RtcCount)%6)*timeout_count10+wdt_old - wdt_cycle);
+    if(adjust>0) timeout_adjust++;
+    else if(adjust<-3) timeout_adjust--;
+  }
+  if(wdt_cycle > 65){     //(600-60)/8.192=65 残り60秒
+    wdt_cycle=0;      //残り60秒以内ならクリアして10分後に測定
+    RtcCount++;   //RtcCountもインクリメント
+    if(RtcCount==6) RtcCount=0;
   }
   timeg = timeg + 90000;
   if(timeg>=240000) timeg = timeg - 240000;

@@ -9,7 +9,7 @@ boolean Initialization=1;  //1:Initialization
 volatile byte wdt_cycle = 0;           // WDTタイムアウトカウント
 #define timeout_count10 72           //10分(72) WDTソフトリセット時間設定 RTC無し前提
 //#define timeout_count5 16             //test用 8秒 WDTソフト割り込み時間設定
-int timeout_adjust = 0;
+int timeout_adjust = 0;               //内部クロック調整用
 //SleepMode
 #include <avr/sleep.h>
 #ifndef cbi
@@ -64,10 +64,18 @@ unsigned long latn=0;      //北緯データ
 unsigned long lnge=0;      //東経データ
 
 void setup() {  //  Will be called only once.
+  Serial.begin(9600);
   pinMode(TRON_GPS,OUTPUT);   
   digitalWrite(TRON_GPS,LOW);    //TR_OFF,GPS＿OFF
   pinMode(Sakura,INPUT);
+   //Pin mode setup
+  pinMode(PIN_RAIN, INPUT_PULLUP);                         //PIN_RAIN(デジタルI/Oピン2)を入力ピンに設定
+  attachInterrupt(0, countRain, FALLING);           //割り込み番号1:FALLINGピンの状態がHIGHからLOWに変わったときにcountRain関数を呼び出し
+  // The chipSelect pin you use should also be set to output
+
   WDT_setup8();                          // 8秒のWDT設定
+
+  Serial.end();    // Txの漏れ電流対策
   // 日射量を検知したらスタート
   int val3=0;
   while(val3==0){
@@ -79,12 +87,6 @@ void setup() {  //  Will be called only once.
     system_sleep();         //delayの代わりに8秒sleepを利用
     wdt_cycle=0;            //softreset防止の為カウンタを毎回初期化
   }
-  Serial.begin(9600);
-  pinMode(PIN_RAIN, INPUT_PULLUP);                         //PIN_RAIN(デジタルI/Oピン2)を入力ピンに設定
-  attachInterrupt(0, countRain, FALLING);           //割り込み番号1:FALLINGピンの状態がHIGHからLOWに変わったときにcountRain関数を呼び出し
-//  Wire.begin();
-  Serial.println("---Start Loop---");
-  Serial.end();    // Txの漏れ電流対策
 }
 
 void loop()
@@ -141,7 +143,7 @@ void loop()
   if( Eneloop>4.6 && (send_Flg==1 || RtcCount%6==0) ){ //sakura.io 電源ONしてデータ送信
     
     //GPSを1日2回測定、日の出と日の入りのタイミング。
-    if( (Radiation > 0 && night==1) || GPSflag==false || (Radiation == 0 && night==0) ){
+    if( (Radiation > 0 && night==1) || GPSflag==false || (Radiation == 0 && night==0) || Eneloop>5.7){
       GPSflag = GPS_get();//GPS取得,夜から日射量が出始めたら測定、前回失敗なら測定
       Serial.end();    // Txの漏れ電流対策
     }
@@ -149,7 +151,7 @@ void loop()
     else night=1;
 
     pinMode(Sakura,OUTPUT);
-    digitalWrite(Sakura,HIGH);       //GPSONのタイミングでSakura電源もONしておく
+    digitalWrite(Sakura,HIGH);       //Sakura電源ON
 
       boolean connectflag = connectLTE();//LTE接続を試行
 
@@ -194,9 +196,9 @@ void loop()
 
   }
 
-//Eneloop電池電圧が5.9V以上で日射量があるとき、電流測定回路をONにして過充電を防止する。
+//Eneloop電池電圧が5.8V以上で日射量があるとき、電流測定回路をONにして過充電を防止する。
   Eneloop=Eneloop_const*ReadSens_ch(1,4,50);      //Eneloop電圧AD1の4回平均値(個別ch, 読取回数, intarvalms)(delay200も兼ねている)
-  if (Eneloop>6.0 ){
+  if (Eneloop>5.8 ){
     digitalWrite(TRON_GPS,HIGH);//TR ON  電流測定回路ON(GPS電源と兼用) 
   }
 
@@ -207,9 +209,9 @@ void loop()
 //sleepからの復帰が雨量計の場合およびWDTの場合は再度スリープに戻る。
   do{
     RainAction = 0; //スリープ後のスリープ復帰判断用にkを初期化  //anan Sleep復帰から計測～送信完了までの間にRainAction = 1になった場合の対応
-    //Sleep mode Setup
-    system_sleep();
+    system_sleep();  //Sleep mode Setup
   }while(RainAction !=0 || wdt_cycle < timeout_count10 + timeout_adjust);  // timeout_count10(x8.192秒)以上経過したら抜ける
+
   wdt_cycle=0; //WDTのカウントのリセット
   RtcCount++; //RTCからの割り込み回数のカウント
   if (RtcCount > 6){       //6×10分(1時間)経過したら初期化
