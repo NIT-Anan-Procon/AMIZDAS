@@ -17,39 +17,46 @@
   </head>
 <!--メニューボタンに関する記述-->
   <body class="drawer drawer--right">
-    <button type="button" class="drawer-toggle drawer-hamburger">
-      <span class="sr-only">toggle navigation</span>
-      <span class="drawer-hamburger-icon"></span>
-    </button>
-    <nav class="drawer-nav">
-      <ul class="drawer-menu">
+  <button type="button" class="drawer-toggle drawer-hamburger">
+    <span class="sr-only">toggle navigation</span>
+    <span class="drawer-hamburger-icon"></span>
+  </button>
+  <nav class="drawer-nav">
+    <ul class="drawer-menu">
         <p>メニュー</p>
-        <li><a href="index.html">topページへ</a></li>
-        <li><a href="login_mypage.php">マイページへ</a></li>
-        <li><a href="login_admin.php">管理者ページへ</a></li>
-      </ul>
-    </nav>
-<!--メニューボタンここまで-->
+        <li><a href="index.html">AMIZDASトップページへ</a></li>
+        <li><a href="login_mypage.html">マイページへ</a></li>
+        <li><a href="login_admin.html">管理者ページへ</a></li>
+    </ul>
+  </nav>
+<!--ここまで-->
     <div class="test">
       <h1>AMIZDASへようこそ！！</h1>
-    </div>
-    <div class="japan_map">
+     <div class="japan_map">
       <img src="img/japan.jpg">
-    </div>
-    <div class="main">
-      <p class="title">AMIZDAS(あ!水ダス)</p>
-      <p class="subtitle">～水災害を自ら守る水位計～</p>
-      <p class="description">
-        ここでは、地域に設置された専用の水位計から水位、危険度、
+     </div>
+	
+	<p class="title">あ!水ダス(AMIZDAS)</p>
+        <p class="subtitle">～水災害を自ら守る水位監視システム～</p>
+        <p class="description">
+        ここでは、地域に設置された専用の水位計から水位、危険度
         <br>
-        今後の水位予測などを確認することができます。
+        を確認することができます。
         <br>
         <br>
-        また、自らが水位計の管理者となって危険な場所の監視、
+        また、自らが水位計の設置者となって危険な場所の監視、
         <br>
         アラートの設定なども可能です。
       </p>
-      <button class="amizdas_detail" onclick="location.href='map.html'">水位計が設置されたマップを確認する</button>
-    </div>
+
+	<form action="map.html" method="get">
+	<select id="pre" class="prefecture" name="pref">
+        <option id="0" value="notset" name="notset2">都道府県を選択
+        <option id="1" value="tokyo" name="tokyo2">東京
+        <option id="2" value="tokushima" name="tokushima2">徳島
+        <option id="3" value="miyazaki" name="miyazaki2">宮崎
+        </select>
+	<button class="amizdas_detail">水位計が設置されたマップを確認する</button>
+	</form>
   </body>
 </html>

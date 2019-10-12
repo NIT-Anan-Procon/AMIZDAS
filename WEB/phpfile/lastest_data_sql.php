@@ -1,20 +1,19 @@
-<?PHP
+﻿<?PHP
     //sql接続
-    require_once('Config/SQLServer.php');
-    $mysqli =MySQLi();
+    require_once('../Config/SQLServer.php');
+    $mysqli = MySQLi();
     if($mysqli->connect_errno){
     echo $mysqli->connect_errno.';'.$mysqli->connect_errnor;
     }
     mysqli_set_charset( $mysqli, 'utf8');
 
-    $file = ["phpfile/csvfile.csv","phpfile/csvfile_sakura.csv"];
-    $module = ["739D7D","uGqZClHAVHB2"];
-    $module_name = ['水位一号機','水位二号機'];
+    $file = ["csvfile.csv","csvfile_sakura.csv","csvfile1.csv","csvfile2.csv","csvfile_SS001.csv"];
+    $module = ["739D7D","uGqZClHAVHB2","739FFC","73E88A","uoTrJtFgSaqB"];
+    $module_name = ["水位計一号機","水位計二号機","水位計三号機","水位計四号機","水位計五号機"];
 
-    for($i=0;$i<2;$i++){
+    for($i=0;$i<count($module);$i++){
         $lines = file($file[$i], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         $water = preg_split("/[、,]/",$lines[count($lines)-1]);
-        
         $sql = "UPDATE water_level SET 
                 time = '$water[0]',
                 water_gage = $water[1],
@@ -29,5 +28,5 @@
     $stmt = $mysqli->query($sql);
     }
     $mysqli->close();
-
 ?>
+

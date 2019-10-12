@@ -1,7 +1,3 @@
-body {
-  width: auto;
-}
-
 .minititle{
   text-align: center;
   font-size: 40px;
@@ -26,6 +22,7 @@ input{
 input[type="text"]{
   /* width: 15em; */
 }
+
 .button {
   text-align: center;
 }

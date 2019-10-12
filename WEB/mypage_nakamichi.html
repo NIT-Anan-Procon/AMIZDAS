@@ -1,3 +1,37 @@
+<?php
+  require_once('Config/SQLServer.php');
+  $mysqli =  MySQLi();
+  if($mysqli->connect_errno){
+      echo $mysqli->connect_errno.";".$mysqli->connect_errnor;
+  }
+  mysqli_set_charset($mysqli,'utf8');
+  function json_safe_encode($data=array("data")){
+    return json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+  }      
+  $selectWL = "select * from water_level";
+  $WLInfo =$mysqli->query($selectWL);
+  $Water_level = array();
+  $AD_ID = $_GET['ID'];
+  $Numcount = 0;
+  foreach($WLInfo as $water_level){
+    $id = $water_level['module_ID'];
+    $selectCwl = "select count(*) as num from alert where module_ID ='$id' and address_ID ='$AD_ID' and flag=0";
+    $Countwl = $mysqli->query($selectCwl);
+    foreach($Countwl as $count){
+      if($count['num']==0){
+        $flag=0;
+      }else{
+        $flag=1;
+      }
+    }
+    $Water_level[$Numcount]['name']=$water_level['water_level_name'];
+    $Water_level[$Numcount]['longitude']=$water_level['lng'];
+    $Water_level[$Numcount]['latitude']=$water_level['lat'];
+    $Water_level[$Numcount]['flag']=$flag;
+    $Numcount++;
+    }
+    var_dump($Water_level);
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -7,7 +41,7 @@
     <link rel="stylesheet" href="css/leaflet.css">
     <link rel="stylesheet" href="css/mypage.css">
     <script src="js/leaflet.js"></script>
-    <script type="text/javascript" src="js/mypage.js"></script>
+    <script type="text/javascript" src="js/mypage_nakamichi.js"></script>
 
     <link rel="stylesheet" href="css/menu.css">
     <link rel="stylesheet" href="css/drawer.min.css">
@@ -19,6 +53,10 @@
   </head>
 
   <body class="drawer drawer--right">
+        <script id="script" type="text/javascript" src="./js/mypage_nakamichi.js"
+        data-param1='<?php echo json_safe_encode($Water_level);?>'
+       >
+       </script>
     <button type="button" class="drawer-toggle drawer-hamburger">
       <span class="sr-only">toggle navigation</span>
       <span class="drawer-hamburger-icon"></span>

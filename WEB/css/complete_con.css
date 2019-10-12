@@ -1,0 +1,26 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.main {
+  width: 50%;
+  height: 30%;
+  /* display: inline-block; */
+  text-align: center;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+div {
+  margin-bottom: 5%;
+}
+
+/* 以下追加しました。 10/06 15:42 */
+
+.link {
+  font-size: 20px;
+}

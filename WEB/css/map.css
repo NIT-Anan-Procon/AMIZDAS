@@ -26,13 +26,25 @@
 
 /*詳細確認ボタンの設定*/
 button.detail_button{
-  width: 420px;
+ position: static;
+  width: 300px;
   height: 70px;
   font-size: 25px;
-  
-  margin: 20px 30px 20px 100px;
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-bottom: 30px;
+  margin-right: 0px;
+}
 
-  text-align: center;
+button.alert_button{
+  position: static;
+  width: 300px;
+  height: 70px;
+  font-size: 25px;
+  margin-top: 0px;
+  margin-left: 20px;
+  margin-bottom: 30px;
+  margin-right: 0px;
 }
 
 .gazo{

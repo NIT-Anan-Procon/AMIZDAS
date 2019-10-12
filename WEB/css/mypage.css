@@ -1,0 +1,50 @@
+html, body {
+  height: 100%;
+  position: static;
+}
+
+.minititle{
+  text-align: center;
+  font-size: 40px;
+}
+
+.conf {
+  height: 100%;
+  width: 90%;
+}
+
+#mapcontainer{
+  z-index: 0;
+  width: 100%;
+  height: 80%;
+  margin: auto;
+}
+
+iframe {
+  margin-top: 10%;
+  margin-bottom: 3%;
+}
+
+#scroll_btn {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-color: #999;
+  border-radius: 50%;
+  font-size: 30px;
+  bottom: -80%;
+  right: 5%;
+}
+
+button {
+  width: 30px;
+  height: 30px;
+  margin-top: 13px;
+  margin-left: 10px;
+  background-color: #999;
+  border-top: 2px solid #444;
+  border-left: 2px solid #444;
+  border-right: 0px #fff;
+  border-bottom: 0px #fff;
+  transform: rotate(45deg);
+}

@@ -36,14 +36,25 @@ window.addEventListener('load', function(){
   L.tileLayer('MapData/4uMaps/{z}/{x}/{y}.png',{maxzoom: 15}).addTo(map);
   // 座標の指定、どのアイコンか指定して設置
   var marker = [];
+  var $script1 = $('#script');
+  var water_gage_data = JSON.parse($script1.attr('data-param1'));
+  alert(water_gage_data);
   // for文でデータベースから取得した水位計の数だけ処理を繰り返す
-  // for (var i = 0; i < array.length; i++) {
+  for (var i = 0; i < water_gage_data.length; i++) {
     let name = '水位計一号機';
-    marker[0] = L.marker([34.10,134.50], {icon:   icon1}).addTo(map).bindPopup(name).openPopup();
-    marker[0].on('click', onMarkerClick);
-    marker[0].name = name;
-    marker[0].mail = "1156777@st.anan-nct.ac.jp";
-  // }
+    if(water_gage_data[i]["flag"]==1){
+        marker[i] = L.marker([water_gage_data[i]["longitude"],water_gage_data[i]["latitude"]], {icon:   icon1}).addTo(map).bindPopup(name).openPopup();
+        marker[i].on('click', onMarkerClick);
+        marker[i].name = water_gage_data[i]["name"];
+        marker[i].mail = "1167120@st.anan-nct.ac.jp";
+    }else{
+        marker[i] = L.marker([water_gage_data[i]["longitude"],water_gage_data[i]["latitude"]], {icon:   icon4}).addTo(map).bindPopup(name).openPopup();
+        marker[i].on('click', onMarkerClick);
+        marker[i].name = water_gage_data[i]["name"];
+        marker[i].mail = "1167120@st.anan-nct.ac.jp";
+    }
+  }
+  
 
   let detail = document.getElementById('scroll_btn');
 
@@ -65,7 +76,7 @@ window.addEventListener('load', function(){
   function delayExec(element){
     setTimeout(function(){
       scrollToElement(element)
-    }, 300);
+    }, 100);
   }
 
   function scrollToElement(element){

@@ -1,9 +1,15 @@
-﻿<!DOCTYPE html>
+<?php
+  $name = $_GET['name'];
+  $url = "detail.html?name=".$name;
+  session_start();
+  $sessionurl = $_SESSION['string'];
+?>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/config.css">
-
+    <link rel="stylesheet" href="css/complete_con.css">
     <link rel="stylesheet" href="css/menu.css">
     <link rel="stylesheet" href="css/drawer.min.css">
     <script src="js/jquery.min.js"></script>
@@ -21,20 +27,31 @@
     <nav class="drawer-nav">
       <ul class="drawer-menu">
         <p>メニュー</p>
-        <li><a href="index.html">topページへ</a></li>
+        <li><a href="index.html">AMIZDASトップページへ</a></li>
         <li><a href="login_mypage.html">マイページへ</a></li>
-        <li><a href="login_admin.html">管理者ページへ</a></li>
+        <li><a href="login_admin.html">設置者ページへ</a></li>
       </ul>
     </nav>
 
-     <div class="minititle">
-       設定が完了しました。
-     </div>
+    <div class="main">
+      <div class="minititle">
+        アラート設定が完了しました。
+      </div>
 
-     <div class="conf">
-        <p><a href="index.html">AMIZDASのtopページに戻る</a></p>
-        <p><a href="detail.html">この水位計の詳細ページに戻る</a></p>
-        <p><a href="map.html">周辺のマップに戻る</a></p>
-     </div>
+
+      <!--  以下の文を修正しました。　10/06 15:44 -->
+       <div class="link">
+         <p><a href="index.html">AMIZDASトップページに戻る</a></p>
+         <p><a href="map.html?pref=<?php echo $sessionurl;?>" onclick="sessiondestroy">この水位計周辺の地図を見る</a></p>
+	      
+         <p><a href="<?php echo $url;?>">この水位計の詳細ページに戻る</a></p>
+      <!-- ここまで -->
+       </div>
+      </div>
   </body>
-</html>
+  <?php
+    function sessiondestroy(){
+      session_destory();
+    }
+  ?>
+</html> 

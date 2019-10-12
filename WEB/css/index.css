@@ -1,29 +1,32 @@
-body {
-  height: 100%;
-  width: 100%;
-}
-
-
-.title{ 
+.title{
   font-size: 40px;
 }
 
 .subtitle{
   font-size: 30px;
 }
-.description{
 
+.description{
   display: inline-block;
   text-align: left;
   font-size: 25px;
 }
 
 .japan_map, .main {
+  position: relative;
   height: 70%;
   width: 50%;
   float: left;
   text-align: center;
 }
+
+#pre{
+  position: absolute;
+  top: 80%;
+  left: 33%;
+  font-size: 1.2em;
+}
+
 
 button.amizdas_detail{
   clear: both;

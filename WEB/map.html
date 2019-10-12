@@ -1,3 +1,4 @@
+﻿
 <!DOCTYPE html>
 <html>
 	<head>
@@ -8,16 +9,16 @@
 	  <script type="text/javascript" src="js/map.js"></script>
 	  <title>AMIZDAS map</title>
 
-          <link rel="stylesheet" href="css/menu.css">
-    	  <link rel="stylesheet" href="css/drawer.min.css">
-	  	  <script src="js/iscroll.js"></script>
-    	  <script src="js/drawer.min.js"></script>
-    	  <script type="text/javascript" src="js/menu.js"></script>
-		  <script type="text/javascript" src="phpfile/createcsv.php"></script>
-		  <script type="text/javascript" src="phpfile/getsakura.php"></script>
+	  <?php include('phpfile/getdata.php');?>
+	  
+      <link rel="stylesheet" href="css/menu.css">
+      <link rel="stylesheet" href="css/drawer.min.css">
+	  <script src="js/iscroll.js"></script>
+	<script src="js/drawer.min.js"></script>
+	<script type="text/javascript" src="js/menu.js"></script>
+	
     </head>
 	<body class="drawer drawer--right">
-
         <button type="button" class="drawer-toggle drawer-hamburger">
     	  <span class="sr-only">toggle navigation</span>
     	  <span class="drawer-hamburger-icon"></span>
@@ -25,15 +26,17 @@
   	<nav class="drawer-nav">
     	  <ul class="drawer-menu">
         	<p>メニュー</p>
-        	<li><a href="index.html">topページへ</a></li>
-        	<li><a href="login_mypage.php">マイページへ</a></li>
-        	<li><a href="login_admin.php">管理者ページへ</a></li>
+        	<li><a href="index.html">AMIZDASトップページへ</a></li>
+        	<li><a href="login_mypage.html">マイページへ</a></li>
+        	<li><a href="login_admin.html">設置者ページへ</a></li>
     	  </ul>
   	</nav>
+
   <div class="minititle">
       水位計アイコンをクリックして、詳しい情報を確認できます。
   </div>
+	
   	<div id="mapcontainer"></div>
-	<?php include('phpfile/lastest_data_sql.php');?>
+
 	</body>
 </html>

@@ -1,9 +1,9 @@
-﻿$(function() {
-  //モーダルを開く
-  $('.set_button').click(function() {
+$(function() {
+  //���[�_�����J��
+  $('.modalBtn').click(function() {
     $('.overlay, .modal').fadeIn();
   })
-  //モーダルの外側か閉じるをクリックでモーダルを閉じる
+  //���[�_���̊O����������N���b�N�Ń��[�_�������
   $('.overlay, .close').click(function() {
     $('.overlay, .modal').fadeOut();
   })

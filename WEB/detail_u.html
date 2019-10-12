@@ -1,4 +1,7 @@
-<?PHP include('phpfile/detail.php')?>
+<?PHP
+include('phpfile/detail.php');
+$name = $_GET['name'];
+?>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -11,7 +14,7 @@
     <script src="js/drawer.min.js"></script>
     <script type="text/javascript" src="js/menu.js"></script>
 	<script type="text/javascript" src="js/Chart_bundle.js"></script>
- 
+
     <title>AMIZDAS detailData</title>
   </head>
 
@@ -25,201 +28,236 @@
 			<div class="picture">
 				<canvas id="myLine2Chart" width="600px" height="250px"></canvas>
 			<script>
-			        //SQLからのデータを取得
-					var alert_data = JSON.parse('<?php echo $php_json;?>');
-        var attention = alert_data['attention'];
-        var danger = alert_data['danger'];
-        var attention_array = [];
-        var danger_array = [];
+			    //SQLからのデータを取得
+                var alert_data = JSON.parse('<?php echo $php_json_u;?>');
+                var attention = alert_data['attention'];
+                var danger = alert_data['danger'];
+                var attention_array = [];
+                var danger_array = [];
 
 
-        //URLのクエリ文字取得
-        var param = location.search;
-        var csvfile; 
-        if(getParam('num')==1){
-            csvfile = 'phpfile/csvfile.csv';
-        }else if(getParam('num')==2){
-            csvfile = 'phpfile/csvfile_sakura.csv';
-        }else{
-            csvfile = 'phpfile/csvfile.csv';
-        }
-
-        //クエリ文字列の特定のキーの値だけを取得
-        function getParam(name, url) {
-            if (!url) url = window.location.href;
-            name = name.replace(/[\[\]]/g, "\\$&");
-            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, " "));
-        }
-
-        function getCSV(){
-            var req = new XMLHttpRequest(); 
-            req.open("get",csvfile, true); // アクセスするファイルを指定
-            req.send(null); // HTTPリクエストの発行
-        
-            // レスポンスが返ってきたらconvertCSVtoArray()を呼ぶ	
-            req.onload = function(){
-            convertCSVtoArray(req.responseText); // 渡されるのは読み込んだCSVデータ
-            }
-        }
-        // 読み込んだCSVデータを二次元配列に変換する
-        function convertCSVtoArray(str){ 
-            var result = [];
-            var tmp = str.split("\n");
-        
-            // 各行ごとにカンマで区切った文字列を要素とした二次元配列を生成
-            for(var i=0;i<tmp.length;++i){
-                result[i] = tmp[i].split(',');
-            }
-            water_level(result);
-        }
-        
-        
-        //二次元配列から水位だけを配列を作成
-        function water_level(str){
-            var data = str;
-            var water = [];
-            var time = [];
-            for(var i=0;i<data.length-1;i++){
-                water.push(data[i][1]);
-                time.push(data[i][0]);
-                attention_array[i] = attention;
-                danger_array[i] = danger;
-            }
-            creatgraph(water,time);
-        }
-        
-        //グラフの作成
-        function creatgraph(mizu,zikan){
-            var data = mizu;
-            var time = zikan;
-            var ctx = document.getElementById("myLine2Chart");
-            var myLine2Chart = new Chart(ctx, {
-            //グラフの種類
-            type: 'line',
-            //データの設定
-            data: {
-                //データ項目のラベル
-                labels: time,
-                //データセット
-                datasets: [
-                    {
-                        label: "水位",
-                        fill: false,
-                        lineTension: 0.1,
-                        backgroundColor: "rgba(75,192,192,0.4)",
-                        borderColor: "rgb(5,141,199)",
-                        borderCapStyle: 'butt',
-                        borderDash: [],
-                        borderDashOffset: 0.0,
-                        borderJoinStyle: 'miter',
-                        pointBorderColor: "rgb(5,141,199)",
-                        pointBackgroundColor: "#fff",
-                        pointBorderWidth: 1,
-                        pointHoverRadius: 5,
-                        pointHoverBackgroundColor: "rgba(75,192,192,1)",
-                        pointHoverBorderColor: "rgba(220,220,220,1)",
-                        pointHoverBorderWidth: 2,
-                        pointRadius: 1,
-                        pointHitRadius: 10,
-                        data: data,
-                        spanGaps: false,
-                    },
-                    {
-                        //凡例
-                        label: "注意水位",
-                        //面の表示
-                        fill: false,
-                        //線のカーブ
-                        lineTension: 0,
-                        //カクカクするグラフできる
-                        lineTension: 0.1,
-                        borderWidth: 1,
-                        //背景色
-                        backgroundColor: "rgba(75,192,192,0.4)",
-                        //枠線の色
-                        borderColor: "yellow",
-                        pointHitRadius: 3, //結合点より外でマウスホバーを認識する範囲
-                        pointRadius: 0,
-                        //グラフのデータ
-                        data: attention_array
-                    },
-                    {
-                        //凡例
-                        label: "危険水位",
-                        //面の表示
-                        fill: false,
-                        //線のカーブ
-                        lineTension: 0,
-                        //カクカクするグラフできる
-                        lineTension: 0.1,
-                        borderWidth: 1,
-                        //背景色
-                        backgroundColor: "rgba(75,192,192,0.4)",
-                        //枠線の色
-                        borderColor: "red",
-                        pointHitRadius: 3, //結合点より外でマウスホバーを認識する範囲
-                        pointRadius: 0,
-                        //グラフのデータ
-                        data: danger_array
-                    } 
-                ]
-            },
-            //オプションの設定
-            options: {
-                //軸の設定
-                scales: {
-                    //縦軸の設定
-                    yAxes: [{
-                        //目盛りの設定
-                        ticks: {
-                            //最小値を0にする
-                            beginAtZero: true,
-                            min: 0,
-                            max: 500
-                        }
-                    }]
+                //URLのクエリ文字取得
+                var param = location.search;
+                var csvfile;
+                if(getParam('name')=='水位計一号機'){
+                    csvfile = 'phpfile/csvfile.csv';
+                }else if(getParam('name')=='水位計二号機'){
+                    csvfile = 'phpfile/csvfile_sakura.csv';
+                }else if(getParam('name')=='水位計三号機'){
+                    csvfile = 'phpfile/csvfile1.csv';
+                }else if(getParam('name')=='水位計四号機'){
+                    csvfile = 'phpfile/csvfile2.csv';
+                }else if(getParam('name')=='水位計五号機'){
+                    csvfile = 'phpfile/csvfile_SS001.csv';
                 }
-            }
-            });
-        }
-        getCSV(); //最初に実行される
-		</script>
+
+                //クエリ文字列の特定のキーの値だけを取得
+                function getParam(name, url) {
+                    if (!url) url = window.location.href;
+                    name = name.replace(/[\[\]]/g, "\\$&");
+                    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                        results = regex.exec(url);
+                    if (!results) return null;
+                    if (!results[2]) return '';
+                    return decodeURIComponent(results[2].replace(/\+/g, " "));
+                }
+
+                function getCSV(){
+                    var req = new XMLHttpRequest();
+                    req.open("get",csvfile, true); // アクセスするファイルを指定
+                    req.send(null); // HTTPリクエストの発行
+
+                    // レスポンスが返ってきたらconvertCSVtoArray()を呼ぶ
+                    req.onload = function(){
+                    convertCSVtoArray(req.responseText); // 渡されるのは読み込んだCSVデータ
+                    }
+                }
+                // 読み込んだCSVデータを二次元配列に変換する
+                function convertCSVtoArray(str){
+                    var result = [];
+                    var tmp = str.split("\n");
+
+                    // 各行ごとにカンマで区切った文字列を要素とした二次元配列を生成
+                    for(var i=0;i<tmp.length;++i){
+                        result[i] = tmp[i].split(',');
+                    }
+                    water_level(result);
+                }
+
+
+                //二次元配列から水位だけを配列を作成
+                function water_level(str){
+                    var data = str;
+                    var water = [];
+                    var time = [];
+                    for(var i=0;i<data.length-1;i++){
+                        water.push(data[i][1]);
+                        time.push(data[i][0]);
+                        attention_array[i] = attention;
+                        danger_array[i] = danger;
+                    }
+                    creatgraph(water,time);
+                }
+
+                //グラフの作成
+                function creatgraph(mizu,zikan){
+                    var data = mizu;
+                    var time = zikan;
+                    var ctx = document.getElementById("myLine2Chart");
+                    var myLine2Chart = new Chart(ctx, {
+                    //グラフの種類
+                    type: 'line',
+                    //データの設定
+                    data: {
+                        //データ項目のラベル
+                        labels: time,
+                        //データセット
+                        datasets: [
+                            {
+                                label: "水位",
+                                fill: false,
+                                lineTension: 0.1,
+                                backgroundColor: "rgb(5,141,199)",
+                                borderColor: "rgb(5,141,199)",
+                                borderCapStyle: 'butt',
+                                borderDash: [],
+                                borderDashOffset: 0.0,
+                                borderJoinStyle: 'miter',
+                                pointBorderColor: "rgb(5,141,199)",
+                                pointBackgroundColor: "#fff",
+                                pointBorderWidth: 1,
+                                pointHoverRadius: 5,
+                                pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                                pointHoverBorderColor: "rgba(220,220,220,1)",
+                                pointHoverBorderWidth: 2,
+                                pointRadius: 1,
+                                pointHitRadius: 10,
+                                data: data,
+                                spanGaps: false,
+                            },
+                            {
+                                //凡例
+                                label: "注意水位",
+                                //面の表示
+                                fill: false,
+                                //線のカーブ
+                                lineTension: 0,
+                                //カクカクするグラフできる
+                                lineTension: 0.1,
+                                borderWidth: 1,
+                                //背景色
+                                backgroundColor: "yellow",
+                                //枠線の色
+                                borderColor: "yellow",
+                                pointHitRadius: 3, //結合点より外でマウスホバーを認識する範囲
+                                pointRadius: 0,
+                                //グラフのデータ
+                                data: attention_array
+                            },
+                            {
+                                //凡例
+                                label: "危険水位",
+                                //面の表示
+                                fill: false,
+                                //線のカーブ
+                                lineTension: 0,
+                                //カクカクするグラフできる
+                                lineTension: 0.1,
+                                borderWidth: 1,
+                                //背景色
+                                backgroundColor: "red",
+                                //枠線の色
+                                borderColor: "red",
+                                pointHitRadius: 3, //結合点より外でマウスホバーを認識する範囲
+                                pointRadius: 0,
+                                //グラフのデータ
+                                data: danger_array
+                            }
+                        ]
+                    },
+                    //オプションの設定
+                    options: {
+                        //軸の設定
+                        scales: {
+                            //縦軸の設定
+                            yAxes: [{
+                                //目盛りの設定
+                                ticks: {
+                                    //最小値を0にする
+                                    beginAtZero: true,
+                                    min: 0,
+                                    max: 500
+                                }
+                            }]
+                        }
+                    }
+                    });
+                }
+                getCSV(); //最初に実行される
+	    	</script>
 			</div>
 			<br>
 			<div class="info">
-				<p>あなたが設定した水位</p>
+                <p>設置者が設定した水位</p>
 				<p>　危険：<?php echo $alert['danger'];?>cm</p>
 				<p>　注意：<?php echo $alert['attention'];?>cm</p>
 			</div>
 			<img id="LINEQR"src="img/LINEQR.JPG" width="140px" height="140px">
+			<p class="LINEtext">
+				このLINEのQRコードを読み取って<br>
+				友達追加すると、<br>
+				設置者からのLINEアラートを<br>
+				受け取ることができます。
+			</p>
 		</div>
 
 		<div class="right">
 			<div class="waterleveldata">
 				<p class="time">現在</p>
-				<p>　水位：危険　<?php echo $water_level['water_gage'];?>cm</p>
-				<p>　天気：雨　　降水量：<?php echo $water_level['water_gage2'];?>mm</p>
-			</div>
+                <p>　水位：<?php echo $water_level['water_gage'].'cm　　';
+                    if($water_level['water_gage']>$user_alert['attention']){
+                        if($user_alert['danger']<$water_level['water_gage']){
+                            echo '(危険)';
+                        }else{
+                            echo '(注意)';
+                        }
+                    }else{
+                        echo '(平常)';
+                    }?>
+                </p>
+                <p>　天気：<?php if($water_level['water_gage2']>0){
+                        echo '雨';echo '　　降水量：'.$water_level['water_gage2'].'mm';
+                        }else if($water_level['radiation']>50){
+                            echo '晴れ';
+                        }else{echo '曇り';
+                    }?>
+                </p>
+            </div>
 
-			<div class="waterleveldata">
-				<tr>
-					<td>
-						<a href="alert_con.html" target="_top"><input class="alert_conf" type="submit" value="アラートの設定"></a>
-					</td>
-				</tr>
-				<br>
-				<br>
-				<br>
-				<div class="waterlevel_con">
-					<p>現在○○○人がこの水位計のアラートを設定しています。</p>
-					<p>　「危険」のアラートを送信する水位では、○○人が××cmに設定しています。</p>
-					<p>　「注意」のアラートを送信する水位では、○○人が△△cmに設定しています。</p>
-				</div>
-				<button class="admin_button" onclick="location.href='login_admin.html'">設置者用設定</button>
+            <div class="settingdata">
+                    <p>あなたが設定した水位</p>
+                    <p>　危険：<?php echo $user_alert['danger']; ?>cm</p>
+                    <p>　注意：<?php echo $user_alert['attention']; ?>cm</p>
+            </div>
+
+			<div class="setting">
+                <a href="alert_con.html?name=<?php echo $name;?>" target="_top"><input class="alert_conf" type="submit" value="アラートの設定"></a>
+                <br>
+                <br>
+                <br>
+                <div class="waterlevel_con">
+                    <p>
+                        現在<em><?php echo $registration['registration_count'];?>人</em>がこの水位計のアラートを設定しています。		<!-- 編集しました。 -->
+                    </p>
+                    <p>
+                        　「危険」のアラートを送信する水位では、<?php echo number_format((float)$ave['danger'],1,'.','');?>cm(平均値)に設定しています。
+                    </p>
+                    <p>
+                        　「注意」のアラートを送信する水位では、<?php echo number_format((float)$average['attention'],1,'.','');?>cm(平均値)に設定しています。
+                    </p>
+            </div>
+                <a href="login_admin.html" target="_top"><input class="admin_button" type="submit" value="設置者用設定"></a>
+				<!-- <a><button class="admin_button" onclick="location.href='login_admin.html'">設置者用設定</button></a> -->
 			</div>
 		</div>
   </body>
